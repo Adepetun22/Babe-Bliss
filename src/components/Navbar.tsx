@@ -1,0 +1,167 @@
+import { useEffect } from 'react';
+
+interface NavbarProps {
+  isScrolled: boolean;
+  setIsScrolled: (v: boolean) => void;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (v: boolean) => void;
+}
+
+// Nav Item with Mega Menu
+function NavItem({ label, isScrolled, children }: { label: string; isScrolled: boolean; children?: React.ReactNode }) {
+  const textColor = isScrolled ? 'text-muted' : 'text-white/85';
+
+  return (
+    <div className="nav-item">
+      <div className={`relative text-xs tracking-widest uppercase cursor-pointer py-2 transition-colors duration-300 font-medium ${textColor} hover:text-clay`}>
+        {label}
+      </div>
+      {children && (
+        <div className="mega-menu">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Mega Menu Content
+function MegaMenu({ type = 'feeding' }: { type?: 'feeding' | 'diapering' | 'nursery' }) {
+  const content = {
+    feeding: [
+      { title: 'Breast Feeding', items: ['Breast Pumps', 'Nursing Pads', 'Nipple Cream', 'Nursing Bras'] },
+      { title: 'Bottle Feeding', items: ['Baby Bottles', 'Formula Dispensers', 'Bottle Warmers', 'Sterilizers'] },
+      { title: 'Solid Foods', items: ['High Chairs', 'Baby Food Makers', 'Bibs & Burp Cloths', 'Suction Bowls'] },
+    ],
+    diapering: [
+      { title: 'Diapers', items: ['Disposable Diapers', 'Cloth Diapers', 'Swim Diapers'] },
+      { title: 'Changing', items: ['Changing Tables', 'Changing Pads', 'Diaper Bags'] },
+      { title: 'Wipes & Creams', items: ['Baby Wipes', 'Diaper Cream', 'Powder'] },
+    ],
+    nursery: [
+      { title: 'Sleep', items: ['Cribs & Bassinets', 'Baby Monitors', 'Sleep Sacks'] },
+      { title: 'Décor', items: ['Wall Art', 'Mobiles', 'Night Lights'] },
+      { title: 'Storage', items: ['Dressers', 'Toy Boxes', 'Closet Organizers'] },
+    ],
+  };
+
+  return (
+    <>
+      {content[type].map((col, i) => (
+        <div key={i} className="mega-col">
+          <h4 className="font-display text-lg font-medium text-clay mb-3.5 border-b border-clay/20 pb-2">{col.title}</h4>
+          {col.items.map((item, j) => (
+            <a key={j} href="#" className="block text-sm text-muted no-underline py-1 transition-all duration-200 hover:text-clay hover:pl-1.5">{item}</a>
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
+// Mobile Menu Component
+function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  return (
+    <div className={`fixed inset-0 z-[999] bg-warm-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] px-9 py-[90px] overflow-y-auto ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <button className="absolute top-6 right-6 w-11 h-11 rounded-full bg-charcoal/5 border-none cursor-pointer text-lg flex items-center justify-center" onClick={onClose}>✕</button>
+      <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Feeding</a>
+      <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Diapering</a>
+      <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Nursery</a>
+      <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Toys</a>
+      <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Clothing</a>
+      <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Gifts</a>
+      <div className="mt-8 flex gap-4">
+        <a href="#" className="font-display text-lg text-charcoal no-underline py-2 border-none">My Account</a>
+        <a href="#" className="font-display text-lg text-charcoal no-underline py-2 border-none">Cart (0)</a>
+      </div>
+    </div>
+  );
+}
+
+// Main Navbar Component
+export default function Navbar({ isScrolled, setIsScrolled, mobileMenuOpen, setMobileMenuOpen }: NavbarProps) {
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 60);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [setIsScrolled]);
+
+  const navBg = isScrolled ? 'bg-cream/95 backdrop-blur-sm shadow-sm' : 'bg-transparent';
+  const textColor = isScrolled ? 'text-charcoal' : 'text-white';
+  const accentColor = isScrolled ? 'text-clay' : 'text-blush';
+  const searchBg = isScrolled ? 'bg-clay/10 border-clay/20' : 'bg-white/15 border-white/30';
+
+  return (
+    <>
+      <nav className={`fixed top-0 left-0 right-0 z-[1000] px-12 h-[72px] flex items-center justify-between transition-all duration-300 ${navBg} ${isScrolled ? 'scrolled' : ''}`}>
+        <a href="#" className={`font-display text-2xl font-light tracking-widest transition-colors duration-300 flex items-center gap-2 ${textColor}`}>
+          Lumi<span className={accentColor}>✦</span>Baby
+        </a>
+
+        {/* Desktop Navigation */}
+        <div className="nav-center">
+          <NavItem label="Feeding" isScrolled={isScrolled}>
+            <MegaMenu />
+          </NavItem>
+          <NavItem label="Diapering" isScrolled={isScrolled}>
+            <MegaMenu type="diapering" />
+          </NavItem>
+          <NavItem label="Nursery" isScrolled={isScrolled}>
+            <MegaMenu type="nursery" />
+          </NavItem>
+          <NavItem label="Toys" isScrolled={isScrolled} />
+          <NavItem label="Clothing" isScrolled={isScrolled} />
+          <NavItem label="Gifts" isScrolled={isScrolled} />
+        </div>
+
+        {/* Nav Icons */}
+        <div className="nav-icons">
+          {/* Search Bar */}
+          <div className={`search-bar items-center gap-2 px-4 py-1.5 rounded-full transition-all duration-300 ${searchBg}`}>
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Search products…" 
+              className="bg-transparent border-none outline-none font-body text-sm w-36 tracking-wide placeholder-white/60"
+              style={{ color: isScrolled ? '#2C2C2C' : 'white' }}
+            />
+          </div>
+
+          {/* User Icon */}
+          <button className="nav-icon">
+            <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
+
+          {/* Cart Icon */}
+          <button className="nav-icon">
+            <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            <span className="cart-badge">3</span>
+          </button>
+
+          {/* Hamburger */}
+          <button 
+            className="hamburger"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu (rendered outside nav for proper positioning) */}
+      <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+    </>
+  );
+}
+
+// Export MobileMenu separately for cases where it's needed independently
+export { MobileMenu };
+

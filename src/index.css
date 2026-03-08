@@ -1,0 +1,154 @@
+/* Babe Bliss - Main Entry Point */
+@import "tailwindcss";
+
+/* Import Design System Tokens */
+@import "./styles/index.css";
+
+/* ========================================
+   HOMEPAGE CUSTOM STYLES
+   These extend the design system for the homepage
+   ======================================== */
+
+/* Add homepage custom colors to the existing theme */
+:root {
+  --color-cream: #FDF6EE;
+  --color-blush: #F2C4B2;
+  --color-sage: #8FAF8A;
+  --color-sage-dark: #5C7A57;
+  --color-clay: #C97B5A;
+  --color-warm-white: #FFFAF5;
+  --color-charcoal: #2C2C2C;
+  --color-muted: #7A7068;
+  --color-gold: #C9A96E;
+  --color-sky: #D4E8F0;
+  --color-lavender: #D8D0E8;
+  
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream, #FDF6EE);
+  color: var(--color-charcoal, #2C2C2C);
+  overflow-x: hidden;
+}
+
+/* Custom Cursor */
+.cursor {
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-clay, #C97B5A);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, background-color 0.3s;
+  mix-blend-mode: multiply;
+}
+
+.cursor-follower {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--color-clay, #C97B5A);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease, opacity 0.3s;
+  opacity: 0.5;
+}
+
+/* Scroll Reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* Animations */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: scale(1) translate(0, 0); }
+  33% { transform: scale(1.08) translate(20px, -15px); }
+  66% { transform: scale(0.95) translate(-10px, 20px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+@keyframes scrollLine {
+  to { top: 200%; }
+}
+
+@keyframes reviewScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Animation Classes */
+.animate-ticker {
+  animation: ticker 30s linear infinite;
+}
+
+.animate-hero-reveal {
+  animation: heroReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-blob-float {
+  animation: blobFloat 8s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.animate-scroll-line {
+  animation: scrollLine 1.8s 1.5s ease-in-out infinite;
+}
+
+.animate-review-scroll {
+  animation: reviewScroll 40s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 2s 1s both;
+}
+

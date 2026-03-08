@@ -1,0 +1,363 @@
+/* ========================================
+   BABE BLISS - MAIN STYLESHEET
+   ======================================== */
+
+/* Import Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* Import Design System Tokens */
+@import "./tokens.css";
+@import "./components.css";
+@import "./grid.css";
+
+/* ========================================
+   NAVBAR CUSTOM STYLES
+   ======================================== */
+
+/* Nav Center - Desktop Navigation Container */
+.nav-center {
+  display: flex;
+  gap: 2.25rem;
+}
+
+/* Hide nav-center on screens smaller than lg (1024px) */
+@media (max-width: 1023px) {
+  .nav-center {
+    display: none;
+  }
+}
+
+/* Hamburger - only visible on mobile */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.scrolled .hamburger span {
+  background: var(--charcoal);
+}
+
+@media (max-width: 1023px) {
+  .hamburger {
+    display: flex;
+  }
+}
+
+/* Nav Icons */
+.nav-icons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  color: rgba(255,255,255,0.85);
+  transition: background 0.3s, color 0.3s;
+  position: relative;
+}
+
+.scrolled .nav-icon {
+  color: var(--charcoal);
+}
+
+.nav-icon:hover {
+  background: rgba(201,123,90,0.12);
+  color: var(--color-clay);
+}
+
+/* Cart badge */
+.cart-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-clay);
+  border-radius: 50%;
+  font-size: 9px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* Search bar - hidden on mobile */
+.search-bar {
+  display: flex;
+}
+
+@media (max-width: 1023px) {
+  .search-bar {
+    display: none;
+  }
+}
+
+/* Nav Item */
+.nav-item {
+  position: relative;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 0.3s;
+  font-weight: 500;
+}
+
+/* Mega Menu */
+.mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 720px;
+  background-color: var(--color-cream);
+  border: 1px solid rgba(201, 123, 90, 0.2);
+  border-top: 3px solid var(--color-clay);
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  padding: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.5rem);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+/* Show mega menu on hover */
+.nav-item:hover .mega-menu {
+  display: grid;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Mega Menu Column */
+.mega-col h4 {
+  font-family: var(--font-family-primary);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-clay);
+  margin-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(201, 123, 90, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.mega-col a {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  text-decoration: none;
+  padding: 0.25rem 0;
+  transition: all 0.2s ease;
+}
+
+.mega-col a:hover {
+  color: var(--color-clay);
+  padding-left: 0.375rem;
+}
+
+/* ========================================
+   TAILWIND V4 THEME CONFIGURATION
+   Using @theme to extend Tailwind with our tokens
+   ======================================== */
+
+@theme {
+  /* Colors */
+  --color-primary: #FFB6C1;
+  --color-secondary: #A7D8DE;
+  --color-tertiary: #FCE4D6;
+  --color-error: #FF4444;
+  --color-success: #00C851;
+  --color-warning: #FFBB33;
+  --color-info: #33B5E5;
+  --color-background: #FFFFFF;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+
+  /* Babe Bliss Custom Colors */
+  --color-cream: #FDF6EE;
+  --color-blush: #F2C4B2;
+  --color-sage: #8FAF8A;
+  --color-sage-dark: #5C7A57;
+  --color-clay: #C97B5A;
+  --color-warm-white: #FFFAF5;
+  --color-charcoal: #2C2C2C;
+  --color-muted: #7A7068;
+  --color-gold: #C9A96E;
+  --color-sky: #D4E8F0;
+  --color-lavender: #D8D0E8;
+
+  /* Font Families */
+  --font-nunito: 'Nunito', sans-serif;
+  --font-open-sans: 'Open Sans', sans-serif;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* Font Sizes - Desktop (default) */
+  --text-h1: 48px;
+  --text-h2: 36px;
+  --text-h3: 24px;
+  --text-p1: 18px;
+  --text-p2: 16px;
+  --text-p3: 14px;
+  --text-b1: 16px;
+  --text-b2: 14px;
+  --text-b3: 12px;
+
+  /* Border Radius */
+  --radius-button: 8px;
+
+  /* Breakpoints */
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+}
+
+/* ========================================
+   RESPONSIVE FONT SIZES
+   ======================================== */
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .text-h1 { font-size: 40px; }
+  .text-h2 { font-size: 30px; }
+  .text-h3 { font-size: 22px; }
+  .text-p1 { font-size: 17px; }
+  .text-p2 { font-size: 15px; }
+  .text-p3 { font-size: 13px; }
+}
+
+/* Mobile (≤767px) */
+@media (max-width: 767px) {
+  .text-h1 { font-size: 32px; }
+  .text-h2 { font-size: 24px; }
+  .text-h3 { font-size: 20px; }
+  .text-p1 { font-size: 16px; }
+  .text-p2 { font-size: 14px; }
+  .text-p3 { font-size: 12px; }
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+body {
+  font-family: var(--font-family-secondary);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Text alignment */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Font weights */
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Display */
+.block { display: block; }
+.inline-block { display: inline-block; }
+
+/* Position */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* Transitions */
+.transition {
+  transition: all 0.2s ease;
+}
+
+.transition-fast {
+  transition: all 0.1s ease;
+}
+
+.transition-slow {
+  transition: all 0.3s ease;
+}
+
+/* Border */
+.rounded {
+  border-radius: var(--button-radius);
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* Shadow */
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+

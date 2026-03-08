@@ -1,0 +1,75 @@
+/* ========================================
+   BABE BLISS DESIGN SYSTEM TOKENS
+   ======================================== */
+
+/* 1. COLOUR PALETTE */
+:root {
+  /* Primary Colours */
+  --color-primary: #FFB6C1;
+  --color-secondary: #A7D8DE;
+  --color-tertiary: #FCE4D6;
+  
+  /* Status Colours */
+  --color-error: #FF4444;
+  --color-success: #00C851;
+  --color-warning: #FFBB33;
+  --color-info: #33B5E5;
+  
+  /* Background & Text */
+  --color-background: #FFFFFF;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  
+  /* Button Specific */
+  --color-button-text: #FFFFFF;
+}
+
+/* 2. BUTTONS */
+:root {
+  --button-radius: 8px;
+  --button-padding-y: 12px;
+  --button-padding-x: 24px;
+  --button-opacity-disabled: 0.5;
+}
+
+/* 3. TYPOGRAPHY */
+:root {
+  /* Font Families */
+  --font-family-primary: 'Nunito', sans-serif;
+  --font-family-secondary: 'Open Sans', sans-serif;
+  --font-family-default: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Font Sizes - Desktop */
+  --font-size-h1: 48px;
+  --font-size-h2: 36px;
+  --font-size-h3: 24px;
+  --font-size-p1: 18px;
+  --font-size-p2: 16px;
+  --font-size-p3: 14px;
+  --font-size-b1: 16px;
+  --font-size-b2: 14px;
+  --font-size-b3: 12px;
+}
+
+/* 4. GRID SYSTEM */
+:root {
+  /* Desktop (≥1024px) */
+  --grid-desktop-columns: 12;
+  --grid-desktop-gutter: 24px;
+  --grid-desktop-margin: 32px;
+  
+  /* Tablet (768px – 1023px) */
+  --grid-tablet-columns: 8;
+  --grid-tablet-gutter: 16px;
+  --grid-tablet-margin: 24px;
+  
+  /* Mobile (≤767px) */
+  --grid-mobile-columns: 4;
+  --grid-mobile-gutter: 12px;
+  --grid-mobile-margin: 16px;
+  
+  /* Breakpoints */
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+}
+
