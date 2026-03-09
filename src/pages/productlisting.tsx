@@ -438,14 +438,18 @@ function ActiveFilters({
   filters, 
   onRemoveCategory,
   onRemovePrice,
-  onRemoveAge 
+  onRemoveAge,
+  onRemoveBrand,
+  onRemoveRating
 }: { 
   filters: FilterState;
   onRemoveCategory: () => void;
   onRemovePrice: () => void;
   onRemoveAge: (age: string) => void;
+  onRemoveBrand: (brand: string) => void;
+  onRemoveRating: (rating: number) => void;
 }) {
-  const hasFilters = filters.category !== 'All' || filters.maxPrice < 200 || filters.ages.size > 0;
+  const hasFilters = filters.category !== 'All' || filters.maxPrice < 200 || filters.ages.size > 0 || filters.brands.length > 0 || filters.ratings.length > 0;
 
   if (!hasFilters) return null;
 
@@ -467,6 +471,18 @@ function ActiveFilters({
         <div key={age} className="flex items-center gap-1.5 px-3 py-1.5 bg-clay-light border border-clay/20 rounded-full text-[12px] text-clay font-medium">
           {age}
           <button onClick={() => onRemoveAge(age)} className="bg-none border-none cursor-pointer text-clay text-[14px] leading-none hover:scale-120 transition-transform">✕</button>
+        </div>
+      ))}
+      {filters.brands.map(brand => (
+        <div key={brand} className="flex items-center gap-1.5 px-3 py-1.5 bg-clay-light border border-clay/20 rounded-full text-[12px] text-clay font-medium">
+          {brand}
+          <button onClick={() => onRemoveBrand(brand)} className="bg-none border-none cursor-pointer text-clay text-[14px] leading-none hover:scale-120 transition-transform">✕</button>
+        </div>
+      ))}
+      {filters.ratings.map(rating => (
+        <div key={rating} className="flex items-center gap-1.5 px-3 py-1.5 bg-clay-light border border-clay/20 rounded-full text-[12px] text-clay font-medium">
+          {rating}+ stars
+          <button onClick={() => onRemoveRating(rating)} className="bg-none border-none cursor-pointer text-clay text-[14px] leading-none hover:scale-120 transition-transform">✕</button>
         </div>
       ))}
     </div>
@@ -491,7 +507,7 @@ export default function ProductListing() {
   
   const [filters, setFilters] = useState<FilterState>({
     category: 'All',
-    maxPrice: 150,
+    maxPrice: 200,
     ages: new Set(['0–3 mo']),
     brands: [],
     ratings: [],
@@ -511,6 +527,8 @@ export default function ProductListing() {
     if (filters.category !== 'All' && product.cat !== filters.category) return false;
     if (product.price > filters.maxPrice) return false;
     if (filters.ages.size > 0 && !filters.ages.has(product.age)) return false;
+    if (filters.brands.length > 0 && !filters.brands.includes(product.brand)) return false;
+    if (filters.ratings.length > 0 && !filters.ratings.some(r => product.rating >= r)) return false;
     return true;
   }).sort((a, b) => {
     switch (sortBy) {
@@ -543,7 +561,7 @@ export default function ProductListing() {
   const handleClearFilters = () => {
     setFilters({
       category: 'All',
-      maxPrice: 150,
+      maxPrice: 200,
       ages: new Set(['0–3 mo']),
       brands: [],
       ratings: [],
@@ -700,6 +718,8 @@ export default function ProductListing() {
               newAges.delete(age);
               setFilters(prev => ({ ...prev, ages: newAges }));
             }}
+            onRemoveBrand={(brand) => setFilters(prev => ({ ...prev, brands: prev.brands.filter(b => b !== brand) }))}
+            onRemoveRating={(rating) => setFilters(prev => ({ ...prev, ratings: prev.ratings.filter(r => r !== rating) }))}
           />
 
           {/* Product Grid */}

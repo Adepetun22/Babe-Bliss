@@ -29,7 +29,7 @@ const CATEGORIES = [
 ];
 
 const BRANDS = [
-  { id: 'b1', name: 'Lumi Originals', count: 312, checked: true },
+  { id: 'b1', name: 'Lumi Originals', count: 312, checked: false },
   { id: 'b2', name: 'NatureBorn', count: 187, checked: false },
   { id: 'b3', name: 'TinyLeaf', count: 143, checked: false },
   { id: 'b4', name: 'Dreamland', count: 98, checked: false },
@@ -39,9 +39,9 @@ const BRANDS = [
 const AGE_GROUPS = ['Newborn', '0–3 mo', '3–6 mo', '6–12 mo', '1–2 yr', '2–3 yr', '3+ yr'];
 
 const RATINGS = [
-  { id: 'r5', label: '★★★★★ 5 stars', value: 5 },
-  { id: 'r4', label: '★★★★☆ 4+ stars', value: 4 },
-  { id: 'r3', label: '★★★☆☆ 3+ stars', value: 3 },
+  { id: 'r5', label: '★★★★★ 5 stars', value: 5, checked: false },
+  { id: 'r4', label: '★★★★☆ 4+ stars', value: 4, checked: false },
+  { id: 'r3', label: '★★★☆☆ 3+ stars', value: 3, checked: false },
 ];
 
 // ==================== HELPER HOOK ====================
@@ -238,7 +238,7 @@ export default function FilterSidebar({ filters, setFilters, onClearAll }: Filte
               <input
                 type="checkbox"
                 id={rating.id}
-                checked={filters.ratings.includes(rating.value)}
+                checked={filters.ratings.includes(rating.value) || (rating.checked && filters.ratings.length === 0)}
                 onChange={(e) => handleRatingChange(rating.value, e.target.checked)}
                 className="w-4 h-4 accent-clay cursor-pointer rounded"
               />
