@@ -168,19 +168,13 @@ export default function FilterSidebar({ filters, setFilters, onClearAll }: Filte
           <span>$0</span>
           <span>${filters.maxPrice}</span>
         </div>
-        <div className="relative h-1 bg-clay-light rounded-[4px] mx-2">
-          <div 
-            className="absolute h-full bg-clay rounded-[4px]"
-            style={{ left: '0%', right: `${100 - (filters.maxPrice / 200) * 100}%` }}
-          />
-        </div>
         <input
           type="range"
           min="0"
           max="200"
           value={filters.maxPrice}
           onChange={(e) => handlePriceChange(Number(e.target.value))}
-          className="w-full accent-clay mt-3 cursor-pointer"
+          className="w-full accent-clay cursor-pointer"
         />
       </FilterSection>
 
