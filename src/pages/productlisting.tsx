@@ -66,6 +66,34 @@ const ALL_PRODUCTS: Product[] = [
   {id:32,name:'Sensory Bin Starter',cat:'Toys',desc:'Kinetic sand, moulds, tools and storage tray in one box.',emoji:'🏖',bg:'img-bg-8',price:32,oldPrice:null,rating:4.5,reviews:432,badge:'New',badgeType:'new',variants:['Standard'],age:'2–3 yr',brand:'SoftCloud'},
 ];
 
+// ==================== FILTER DATA ====================
+
+const CATEGORIES = [
+  { name: 'All', label: 'All Products', count: 986 },
+  { name: 'Feeding', label: '🍼 Feeding', count: 124 },
+  { name: 'Diapering', label: '🌿 Diapering', count: 87 },
+  { name: 'Nursery', label: '🌙 Nursery', count: 210 },
+  { name: 'Toys', label: '🧸 Toys', count: 195 },
+  { name: 'Clothing', label: '👶 Clothing', count: 302 },
+  { name: 'Gifts', label: '🎁 Gifts', count: 68 },
+];
+
+const BRANDS = [
+  { id: 'b1', name: 'Lumi Originals', count: 312, checked: false },
+  { id: 'b2', name: 'NatureBorn', count: 187, checked: false },
+  { id: 'b3', name: 'TinyLeaf', count: 143, checked: false },
+  { id: 'b4', name: 'Dreamland', count: 98, checked: false },
+  { id: 'b5', name: 'SoftCloud', count: 76, checked: false },
+];
+
+const AGE_GROUPS = ['Newborn', '0–3 mo', '3–6 mo', '6–12 mo', '1–2 yr', '2–3 yr', '3+ yr'];
+
+const RATINGS = [
+  { id: 'r5', label: '★★★★★ 5 stars', value: 5, checked: false },
+  { id: 'r4', label: '★★★★☆ 4+ stars', value: 4, checked: false },
+  { id: 'r3', label: '★★★☆☆ 3+ stars', value: 3, checked: false },
+];
+
 // ==================== CUSTOM HOOKS ====================
 
 // Custom Cursor Hook
@@ -391,12 +419,63 @@ function QuickViewModal({
 function MobileFilterSheet({ 
   isOpen, 
   onClose,
-  onApply 
+  onApply,
+  filters,
+  setFilters,
+  onClearAll
 }: { 
   isOpen: boolean;
   onClose: () => void;
   onApply: () => void;
+  filters: FilterState;
+  setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+  onClearAll: () => void;
 }) {
+  // Note: Collapsible sections functionality can be added if needed
+
+  // Category handlers
+  const handleCategoryChange = (category: string) => {
+    setFilters(prev => ({ ...prev, category }));
+  };
+
+  // Price handlers
+  const handlePriceChange = (value: number) => {
+    setFilters(prev => ({ ...prev, maxPrice: value }));
+  };
+
+  // Brand handlers
+  const handleBrandChange = (brandName: string, checked: boolean) => {
+    setFilters(prev => {
+      const newBrands = checked 
+        ? [...prev.brands, brandName]
+        : prev.brands.filter(b => b !== brandName);
+      return { ...prev, brands: newBrands };
+    });
+  };
+
+  // Age group handlers
+  const handleAgeToggle = (age: string) => {
+    setFilters(prev => {
+      const newAges = new Set(prev.ages);
+      if (newAges.has(age)) {
+        newAges.delete(age);
+      } else {
+        newAges.add(age);
+      }
+      return { ...prev, ages: newAges };
+    });
+  };
+
+  // Rating handlers
+  const handleRatingChange = (ratingValue: number, checked: boolean) => {
+    setFilters(prev => {
+      const newRatings = checked 
+        ? [...prev.ratings, ratingValue]
+        : prev.ratings.filter(r => r !== ratingValue);
+      return { ...prev, ratings: newRatings };
+    });
+  };
+
   return (
     <>
       <div 
@@ -417,17 +496,141 @@ function MobileFilterSheet({
           </button>
         </div>
         
-        {/* Simplified filter content for mobile */}
-        <div className="px-6 pb-10">
-          <p className="text-muted text-sm">Filter options same as desktop sidebar.</p>
+        {/* Full filter content - same as desktop sidebar */}
+        <div className="px-6 pb-6">
+          {/* Category Section */}
+          <div className="mb-9">
+            <div className="text-[11px] tracking-[0.22em] uppercase text-charcoal font-medium mb-[18px] flex items-center justify-between">
+              Category
+              <span className="text-muted text-[16px]">↓</span>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {CATEGORIES.map((cat) => (
+                <div
+                  key={cat.name}
+                  className={`cat-pill flex items-center justify-between px-3.5 py-2.5 rounded-[10px] cursor-pointer text-[13px] transition-all border border-transparent ${
+                    filters.category === cat.name 
+                      ? 'bg-clay text-white border-clay' 
+                      : 'text-muted hover:bg-clay-light hover:text-clay'
+                  }`}
+                  onClick={() => handleCategoryChange(cat.name)}
+                >
+                  <span>{cat.label}</span>
+                  <span className="text-[11px] opacity-70">{cat.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Range Section */}
+          <div className="mb-9">
+            <div className="text-[11px] tracking-[0.22em] uppercase text-charcoal font-medium mb-[18px] flex items-center justify-between">
+              Price Range
+              <span className="text-muted text-[16px]">↓</span>
+            </div>
+            <div className="flex justify-between text-[13px] text-clay font-medium mb-3.5">
+              <span>$0</span>
+              <span>${filters.maxPrice}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="200"
+              value={filters.maxPrice}
+              onChange={(e) => handlePriceChange(Number(e.target.value))}
+              className="w-full accent-clay cursor-pointer"
+            />
+          </div>
+
+          {/* Brand Section */}
+          <div className="mb-9">
+            <div className="text-[11px] tracking-[0.22em] uppercase text-charcoal font-medium mb-[18px] flex items-center justify-between">
+              Brand
+              <span className="text-muted text-[16px]">↓</span>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {BRANDS.map((brand) => (
+                <div key={brand.id} className="flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id={`mobile-${brand.id}`}
+                    checked={filters.brands.includes(brand.name) || (brand.checked && filters.brands.length === 0)}
+                    onChange={(e) => handleBrandChange(brand.name, e.target.checked)}
+                    className="w-4 h-4 accent-clay cursor-pointer rounded"
+                  />
+                  <label htmlFor={`mobile-${brand.id}`} className="text-[13px] text-muted cursor-pointer flex-1 hover:text-charcoal transition-colors">
+                    {brand.name}
+                  </label>
+                  <span className="text-[11px] text-muted">{brand.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Age Group Section */}
+          <div className="mb-9">
+            <div className="text-[11px] tracking-[0.22em] uppercase text-charcoal font-medium mb-[18px] flex items-center justify-between">
+              Age Group
+              <span className="text-muted text-[16px]">↓</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {AGE_GROUPS.map((age) => (
+                <div
+                  key={age}
+                  className={`age-tag px-3.5 py-1.5 rounded-[20px] text-[12px] border border-clay/14 cursor-pointer transition-all whitespace-nowrap ${
+                    filters.ages.has(age) 
+                      ? 'bg-clay border-clay text-white' 
+                      : 'text-muted hover:border-clay hover:text-clay'
+                  }`}
+                  onClick={() => handleAgeToggle(age)}
+                >
+                  {age}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Rating Section */}
+          <div className="mb-9">
+            <div className="text-[11px] tracking-[0.22em] uppercase text-charcoal font-medium mb-[18px] flex items-center justify-between">
+              Rating
+              <span className="text-muted text-[16px]">↓</span>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              {RATINGS.map((rating) => (
+                <div key={rating.id} className="flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id={`mobile-${rating.id}`}
+                    checked={filters.ratings.includes(rating.value) || (rating.checked && filters.ratings.length === 0)}
+                    onChange={(e) => handleRatingChange(rating.value, e.target.checked)}
+                    className="w-4 h-4 accent-clay cursor-pointer rounded"
+                  />
+                  <label htmlFor={`mobile-${rating.id}`} className="text-[13px] text-muted cursor-pointer">
+                    {rating.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Clear All Button */}
+          <button 
+            onClick={onClearAll}
+            className="w-full py-[11px] border border-clay/14 rounded-[10px] bg-transparent text-muted text-[12px] tracking-[0.08em] uppercase cursor-pointer transition-all hover:border-clay hover:text-clay hover:bg-clay-light mt-1"
+          >
+            ✕ Clear All Filters
+          </button>
         </div>
 
-        <button 
-          className="fixed bottom-0 left-0 right-0 py-[15px] border-none bg-clay text-white font-body text-[13px] tracking-[0.1em] uppercase cursor-pointer font-medium"
-          onClick={onApply}
-        >
-          Apply Filters
-        </button>
+        <div className="px-6 pb-6">
+          <button 
+            className="w-full max-w-[416px] mx-auto block py-[15px] rounded-[50px] border-none bg-clay text-white font-body text-[13px] tracking-[0.1em] uppercase cursor-pointer font-medium mt-5"
+            onClick={onApply}
+          >
+            Apply Filters
+          </button>
+        </div>
       </div>
     </>
   );
@@ -629,6 +832,9 @@ export default function ProductListing() {
         isOpen={isMobileSheetOpen}
         onClose={() => setIsMobileSheetOpen(false)}
         onApply={() => setIsMobileSheetOpen(false)}
+        filters={filters}
+        setFilters={setFilters}
+        onClearAll={handleClearFilters}
       />
 
       <div className="flex min-h-screen pt-[72px]">
