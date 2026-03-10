@@ -860,7 +860,7 @@ export default function ProductListing() {
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Mobile Filter Button - shown on mobile/tablet, hidden on desktop */}
               <button 
                 className="flex lg:hidden items-center gap-2 px-[18px] py-2.5 rounded-[10px] border border-clay/14 bg-warm-white font-body text-[13px] text-charcoal cursor-pointer transition-all hover:border-clay hover:text-clay"
