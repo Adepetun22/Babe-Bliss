@@ -34,19 +34,21 @@
   gap: 5px;
   cursor: pointer;
   padding: 4px;
+  z-index: 1001;
+  color: white;
 }
 
 .hamburger span {
   display: block;
   width: 24px;
-  height: 2px;
-  background: white;
+  height: 3px;
+  background: currentColor;
   border-radius: 2px;
   transition: all 0.3s;
 }
 
-.scrolled .hamburger span {
-  background: var(--charcoal);
+.scrolled .hamburger {
+  color: var(--charcoal);
 }
 
 @media (max-width: 1023px) {

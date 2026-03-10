@@ -64,6 +64,21 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
   return (
     <div className={`fixed inset-0 z-[999] bg-warm-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] px-9 py-[90px] overflow-y-auto ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <button className="absolute top-6 right-6 w-11 h-11 rounded-full bg-charcoal/5 border-none cursor-pointer text-lg flex items-center justify-center" onClick={onClose}>✕</button>
+      
+      {/* Mobile Search Input */}
+      <div className="mobile-search mb-6">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-clay/10 border border-clay/20">
+          <svg className="w-5 h-5 text-clay" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Search products…" 
+            className="bg-transparent border-none outline-none font-body text-base w-full text-charcoal placeholder-muted"
+          />
+        </div>
+      </div>
+      
       <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Feeding</a>
       <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Diapering</a>
       <a href="#" className="block font-display text-3xl font-light text-charcoal no-underline py-3 border-b border-charcoal/5 transition-colors duration-200 hover:text-clay hover:pl-2">Nursery</a>
