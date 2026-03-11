@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#FDF6EE;
+  --warm-white:#FFFAF5;
+  --blush:#F2C4B2;
+  --blush-light:#FDE8E0;
+  --sage:#8FAF8A;
+  --sage-dark:#5C7A57;
+  --clay:#C97B5A;
+  --clay-light:#EDD5C8;
+  --clay-deep:#A35E41;
+  --gold:#C9A96E;
+  --charcoal:#2C2C2C;
+  --charcoal-soft:#3E3832;
+  --muted:#7A7068;
+  --border:rgba(201,123,90,.13);
+  --border-soft:rgba(44,44,44,.08);
+  --font-display:'Cormorant Garamond',serif;
+  --font-body:'DM Sans',sans-serif;
+  --nav-h:68px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--charcoal);font-family:var(--font-body);overflow-x:hidden;cursor:none}
+
+/* ── CURSOR ── */
+.cursor{width:10px;height:10px;background:var(--clay);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s,background .25s,width .25s,height .25s;mix-blend-mode:multiply}
+.cursor-ring{width:34px;height:34px;border:1.5px solid var(--clay);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .22s ease,opacity .3s;opacity:.4}
+.cursor.expand{width:48px;height:48px;background:rgba(201,123,90,.15);mix-blend-mode:normal}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:800;height:var(--nav-h);padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(253,246,238,.95);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--font-display);font-size:26px;font-weight:300;color:var(--charcoal);text-decoration:none;letter-spacing:.06em}
+.nav-logo span{color:var(--clay)}
+.breadcrumb{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.breadcrumb a{color:var(--muted);text-decoration:none;transition:color .2s}.breadcrumb a:hover{color:var(--clay)}
+.breadcrumb .sep{opacity:.4;font-size:10px}
+.nav-icons{display:flex;gap:14px;align-items:center}
+.n-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--charcoal);transition:background .2s,color .2s;position:relative}
+.n-icon:hover{background:var(--clay-light);color:var(--clay)}
+.cart-dot{position:absolute;top:-1px;right:-1px;width:15px;height:15px;background:var(--clay);border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
+
+/* ── PAGE LAYOUT ── */
+.page{padding-top:var(--nav-h)}
+
+/* ── STICKY MINI HEADER (on scroll) ── */
+.sticky-bar{
+  position:fixed;top:var(--nav-h);left:0;right:0;z-index:700;
+  background:rgba(253,246,238,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:12px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  transform:translateY(-100%);transition:transform .35s var(--ease);
+  pointer-events:none;
+}
+.sticky-bar.visible{transform:translateY(0);pointer-events:all}
+.sticky-bar-name{font-family:var(--font-display);font-size:20px;font-weight:400}
+.sticky-bar-price{font-size:18px;font-weight:500;color:var(--charcoal)}
+.sticky-add{padding:9px 28px;border-radius:50px;background:var(--clay);color:#fff;border:none;font-family:var(--font-body);font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .25s,transform .2s;font-weight:500}
+.sticky-add:hover{background:var(--clay-deep);transform:scale(1.03)}
+
+/* ── HERO PRODUCT SECTION ── */
+.product-hero{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - var(--nav-h));align-items:start}
+
+/* ── GALLERY ── */
+.gallery-col{
+  position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));
+  display:flex;flex-direction:column;gap:0;
+  background:var(--warm-white);overflow:hidden;
+}
+.gallery-main{
+  flex:1;position:relative;overflow:hidden;cursor:zoom-in;
+  display:flex;align-items:center;justify-content:center;
+}
+.gallery-main-inner{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  transition:transform .5s var(--ease);
+  transform-origin:center center;
+  font-size:clamp(120px,15vw,180px);
+}
+.gallery-main.zoomed .gallery-main-inner{transform:scale(2.2);cursor:zoom-out}
+.gallery-main-inner.animating{transition:none}
+
+/* Zoom lens effect */
+.zoom-lens{
+  position:absolute;pointer-events:none;z-index:10;
+  width:120px;height:120px;border-radius:50%;
+  border:2px solid rgba(201,123,90,.5);
+  box-shadow:0 8px 32px rgba(44,44,44,.2);
+  background:rgba(255,255,255,.15);backdrop-filter:blur(2px);
+  opacity:0;transition:opacity .2s;transform:translate(-50%,-50%);
+}
+.gallery-main:hover .zoom-lens{opacity:1}
+
+/* Slide nav arrows */
+.gallery-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.9);border:1px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:var(--charcoal);transition:all .25s;box-shadow:0 4px 16px rgba(44,44,44,.1);
+}
+.gallery-arrow:hover{background:#fff;box-shadow:0 6px 24px rgba(44,44,44,.15);transform:translateY(-50%) scale(1.08)}
+.gallery-arrow.prev{left:16px}
+.gallery-arrow.next{right:16px}
+
+/* Gallery badge */
+.gallery-badges{position:absolute;top:20px;left:20px;z-index:5;display:flex;flex-direction:column;gap:7px}
+.g-badge{padding:5px 13px;border-radius:20px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.g-badge.bestseller{background:var(--clay);color:#fff}
+.g-badge.award{background:var(--charcoal);color:#fff}
+
+/* Color swatch indicator */
+.gallery-color-label{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:5;
+  background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
+  padding:7px 18px;border-radius:20px;font-size:12px;color:var(--charcoal);
+  border:1px solid var(--border);white-space:nowrap;
+  transition:opacity .3s;
+}
+
+/* Thumbnails */
+.gallery-thumbs{
+  display:flex;gap:0;border-top:1px solid var(--border);height:88px;
+  background:var(--warm-white);flex-shrink:0;
+}
+.gallery-thumb{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  font-size:28px;cursor:pointer;border-right:1px solid var(--border);
+  position:relative;transition:background .2s;
+  overflow:hidden;
+}
+.gallery-thumb:last-child{border-right:none}
+.gallery-thumb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--clay);transform:scaleX(0);transition:transform .25s var(--ease)}
+.gallery-thumb.active{background:var(--cream)}
+.gallery-thumb.active::after{transform:scaleX(1)}
+.gallery-thumb:hover{background:var(--clay-light)}
+
+/* ── PRODUCT INFO ── */
+.info-col{padding:52px 52px 80px;display:flex;flex-direction:column;gap:0;background:var(--cream)}
+
+.info-eyebrow{font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--clay);margin-bottom:10px;font-weight:500;display:flex;align-items:center;gap:10px}
+.info-eyebrow::before{content:'';width:24px;height:1px;background:var(--clay)}
+
+.product-title{font-family:var(--font-display);font-size:clamp(32px,3.5vw,52px);font-weight:400;line-height:1.1;color:var(--charcoal);margin-bottom:14px;letter-spacing:-.01em}
+.product-title em{font-style:italic;color:var(--clay)}
+
+/* Rating row */
+.rating-row{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+.stars-display{display:flex;gap:2px}
+.star-icon{font-size:14px;color:var(--gold)}
+.star-icon.empty{color:#DDD}
+.rating-num{font-size:14px;font-weight:500;color:var(--charcoal)}
+.review-link{font-size:13px;color:var(--clay);text-decoration:underline;cursor:pointer;transition:opacity .2s}
+.review-link:hover{opacity:.7}
+.rating-divider{width:1px;height:16px;background:var(--border-soft)}
+.verified-badge{font-size:11px;color:var(--sage-dark);background:rgba(92,122,87,.1);padding:3px 10px;border-radius:20px;font-weight:500}
+
+/* Price */
+.price-block{margin-bottom:24px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.price-main{font-family:var(--font-display);font-size:42px;font-weight:400;color:var(--charcoal);letter-spacing:-.01em}
+.price-old{font-size:20px;color:var(--muted);text-decoration:line-through}
+.price-save{padding:5px 14px;background:rgba(201,123,90,.12);color:var(--clay);border-radius:8px;font-size:13px;font-weight:600}
+
+/* Short desc */
+.short-desc{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:28px;border-left:3px solid var(--clay-light);padding-left:18px}
+
+/* Availability */
+.availability{display:flex;align-items:center;gap:8px;margin-bottom:28px;font-size:13px}
+.avail-dot{width:8px;height:8px;border-radius:50%;background:var(--sage-dark);flex-shrink:0;box-shadow:0 0 0 3px rgba(92,122,87,.2)}
+.avail-dot.low{background:#E07070;box-shadow:0 0 0 3px rgba(224,112,112,.2)}
+.avail-text{color:var(--charcoal);font-weight:500}
+.avail-sub{color:var(--muted)}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:4px 0 28px}
+
+/* Color selector */
+.option-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--charcoal);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.option-label span{color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;font-size:13px}
+.color-swatches{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.swatch{
+  width:40px;height:40px;border-radius:50%;cursor:pointer;
+  position:relative;transition:transform .25s var(--ease);
+  box-shadow:0 2px 8px rgba(44,44,44,.15);
+}
+.swatch:hover{transform:scale(1.12)}
+.swatch.active::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+.swatch.active{outline:3px solid var(--clay);outline-offset:3px}
+.swatch.white.active::after{color:var(--charcoal)}
+
+/* Size selector */
+.size-grid{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:28px}
+.size-btn{
+  padding:10px 20px;border-radius:10px;
+  border:1.5px solid var(--border);background:transparent;
+  font-family:var(--font-body);font-size:13px;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.size-btn:hover{border-color:var(--clay);color:var(--clay);background:var(--clay-light)}
+.size-btn.active{background:var(--clay);border-color:var(--clay);color:#fff}
+.size-btn.oos{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+
+/* Qty + CTA */
+.add-row{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.qty-stepper{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:50px;overflow:hidden;background:var(--warm-white);height:52px;flex-shrink:0}
+.qty-btn{width:42px;height:48px;border:none;background:transparent;cursor:pointer;font-size:20px;font-weight:300;color:var(--charcoal);transition:background .2s;display:flex;align-items:center;justify-content:center}
+.qty-btn:hover{background:var(--clay-light);color:var(--clay)}
+.qty-num{width:44px;text-align:center;font-size:16px;font-weight:500;color:var(--charcoal)}
+.btn-cart{
+  flex:1;min-width:180px;height:52px;line-height:1;border-radius:50px;border:none;
+  background:var(--clay);color:#fff;font-family:var(--font-body);
+  font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;transition:background .3s,transform .25s,box-shadow .3s;
+  font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:0 28px;flex-shrink:0;
+}
+.btn-cart:hover{background:var(--clay-deep);transform:translateY(-2px);box-shadow:0 12px 32px rgba(201,123,90,.35)}
+.btn-cart.success{background:var(--sage-dark)}
+.btn-wishlist{
+  width:52px;height:52px;border-radius:50%;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;
+  transition:all .25s;color:var(--muted);
+}
+.btn-wishlist:hover{border-color:var(--clay);color:var(--clay);background:var(--clay-light)}
+.btn-wishlist.active{border-color:var(--clay);color:var(--clay);background:var(--clay-light)}
+
+/* Trust signals */
+.trust-row{display:flex;gap:20px;flex-wrap:wrap;padding:18px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:28px}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.trust-item .t-icon{font-size:18px;flex-shrink:0}
+
+/* Feature pills */
+.feature-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.feat-pill{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:var(--warm-white);border:1px solid var(--border);font-size:12px;color:var(--muted)}
+.feat-pill .fp-icon{font-size:16px}
+
+/* Share row */
+.share-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.share-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.share-btn:hover{border-color:var(--clay);color:var(--clay);background:var(--clay-light)}
+
+/* ── TABS SECTION ── */
+.tabs-section{background:var(--warm-white);border-top:1px solid var(--border)}
+.tabs-nav{display:flex;border-bottom:1px solid var(--border);padding:0 48px;overflow-x:auto;scrollbar-width:none;position:sticky;top:var(--nav-h);background:var(--warm-white);z-index:100}
+.tabs-nav::-webkit-scrollbar{display:none}
+.tab-btn{padding:20px 28px;border:none;background:none;font-family:var(--font-body);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;position:relative;transition:color .25s}
+.tab-btn::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--clay);transform:scaleX(0);transition:transform .3s var(--ease)}
+.tab-btn.active{color:var(--charcoal);font-weight:500}
+.tab-btn.active::after{transform:scaleX(1)}
+.tab-panel{display:none;padding:60px 48px;animation:fadeUp .4s var(--ease) both}
+.tab-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Description Tab */
+.desc-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:start}
+.desc-main h2{font-family:var(--font-display);font-size:36px;font-weight:400;margin-bottom:20px;line-height:1.2}
+.desc-main h2 em{font-style:italic;color:var(--clay)}
+.desc-main p{font-size:15px;color:var(--muted);line-height:1.9;margin-bottom:18px}
+.desc-highlights{background:var(--cream);border-radius:20px;padding:32px;border:1px solid var(--border)}
+.desc-highlights h4{font-family:var(--font-display);font-size:22px;font-weight:400;margin-bottom:20px;color:var(--charcoal)}
+.highlight-item{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border-soft)}
+.highlight-item:last-child{border-bottom:none;padding-bottom:0}
+.h-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.h-text h5{font-size:14px;font-weight:500;color:var(--charcoal);margin-bottom:3px}
+.h-text p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Specs Tab */
+.specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.spec-table{border-radius:16px;overflow:hidden;border:1px solid var(--border)}
+.spec-table-head{background:var(--clay);padding:16px 24px;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#fff;font-weight:500}
+.spec-row{display:flex;align-items:center;padding:14px 24px;border-bottom:1px solid var(--border-soft)}
+.spec-row:last-child{border-bottom:none}
+.spec-row:nth-child(even){background:var(--cream)}
+.spec-key{font-size:13px;color:var(--muted);flex:1;font-weight:400}
+.spec-val{font-size:13px;color:var(--charcoal);font-weight:500;text-align:right}
+.cert-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.cert-badge{display:flex;align-items:center;gap:8px;padding:12px 18px;background:var(--warm-white);border:1px solid var(--border);border-radius:12px;font-size:12px;color:var(--muted)}
+.cert-badge .cb-icon{font-size:20px}
+
+/* Care Tab */
+.care-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.care-card{background:var(--cream);border-radius:16px;padding:28px 24px;border:1px solid var(--border);text-align:center;transition:transform .3s var(--ease)}
+.care-card:hover{transform:translateY(-4px)}
+.care-icon{font-size:36px;margin-bottom:14px}
+.care-card h4{font-family:var(--font-display);font-size:20px;font-weight:400;margin-bottom:10px}
+.care-card p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* Reviews Tab */
+.reviews-header{display:grid;grid-template-columns:280px 1fr;gap:48px;margin-bottom:48px;align-items:start}
+.reviews-summary{background:var(--cream);border-radius:20px;padding:36px;border:1px solid var(--border);text-align:center}
+.big-rating{font-family:var(--font-display);font-size:72px;font-weight:300;color:var(--charcoal);line-height:1}
+.big-rating-sub{font-size:13px;color:var(--muted);margin:4px 0 16px}
+.big-stars{font-size:22px;color:var(--gold);letter-spacing:2px;margin-bottom:16px}
+.rating-bars{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.rating-bar-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.rating-bar-track{flex:1;height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+.rating-bar-fill{height:100%;background:var(--gold);border-radius:6px;transition:width .8s var(--ease)}
+.reviews-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.rev-filter{padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:transparent;font-family:var(--font-body);font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s}
+.rev-filter.active,.rev-filter:hover{border-color:var(--clay);color:var(--clay);background:var(--clay-light)}
+.reviews-list{display:flex;flex-direction:column;gap:24px}
+.review-card{background:var(--cream);border-radius:16px;padding:28px 32px;border:1px solid var(--border);transition:box-shadow .3s}
+.review-card:hover{box-shadow:0 8px 32px rgba(44,44,44,.07)}
+.review-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px}
+.reviewer-info{display:flex;align-items:center;gap:12px}
+.reviewer-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.reviewer-name{font-size:14px;font-weight:500;color:var(--charcoal)}
+.reviewer-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.review-stars-date{text-align:right;flex-shrink:0}
+.review-date{font-size:11px;color:var(--muted);margin-top:4px}
+.review-title{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--charcoal);margin-bottom:8px}
+.review-body{font-size:14px;color:var(--muted);line-height:1.75}
+.review-footer{display:flex;align-items:center;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border-soft)}
+.review-helpful{font-size:12px;color:var(--muted)}
+.helpful-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s}
+.helpful-btn:hover{border-color:var(--clay);color:var(--clay)}
+.verified-purchase{font-size:11px;color:var(--sage-dark);background:rgba(92,122,87,.08);padding:4px 10px;border-radius:20px;font-weight:500;margin-left:auto}
+.write-review-btn{width:100%;padding:16px;border-radius:50px;border:1.5px solid var(--clay);background:transparent;color:var(--clay);font-family:var(--font-body);font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;margin-top:32px;font-weight:500}
+.write-review-btn:hover{background:var(--clay);color:#fff}
+
+/* ── CAROUSEL ── */
+.carousel-section{padding:80px 48px;background:var(--cream)}
+.carousel-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
+.carousel-header h2{font-family:var(--font-display);font-size:clamp(30px,3vw,46px);font-weight:400;line-height:1.1}
+.carousel-header h2 em{font-style:italic;color:var(--clay)}
+.carousel-controls{display:flex;gap:10px}
+.carr-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--charcoal);transition:all .25s}
+.carr-btn:hover{background:var(--clay);border-color:var(--clay);color:#fff}
+.carousel-track-wrap{overflow:hidden;position:relative}
+.carousel-track{display:flex;gap:20px;transition:transform .5s var(--ease)}
+.carousel-card{
+  flex-shrink:0;width:calc(25% - 15px);background:var(--warm-white);border-radius:20px;overflow:hidden;
+  cursor:pointer;transition:transform .4s var(--ease),box-shadow .4s;
+}
+.carousel-card:hover{transform:translateY(-8px);box-shadow:0 20px 50px rgba(44,44,44,.12)}
+.carr-img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;overflow:hidden}
+.carr-img-inner{transition:transform .5s var(--ease)}
+.carousel-card:hover .carr-img-inner{transform:scale(1.08)}
+.carr-body{padding:16px 18px 20px}
+.carr-cat{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;font-weight:500}
+.carr-name{font-family:var(--font-display);font-size:18px;font-weight:400;color:var(--charcoal);margin-bottom:4px;line-height:1.2}
+.carr-rating{font-size:12px;color:var(--gold);margin-bottom:10px}
+.carr-footer{display:flex;align-items:center;justify-content:space-between}
+.carr-price{font-size:16px;font-weight:500;color:var(--charcoal)}
+.carr-add{width:32px;height:32px;border-radius:50%;border:none;background:var(--clay);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s}
+.carr-add:hover{background:var(--clay-deep);transform:scale(1.1)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(16px);z-index:9000;
+  background:var(--charcoal);color:#fff;padding:14px 28px;border-radius:50px;
+  font-size:13px;letter-spacing:.04em;display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 32px rgba(44,44,44,.25);opacity:0;transition:opacity .35s,transform .35s var(--ease);pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FOOTER ── */
+.site-footer{background:var(--charcoal);color:rgba(253,246,238,.55);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-logo-sm{font-family:var(--font-display);font-size:22px;font-weight:300;color:var(--cream)}
+.footer-logo-sm span{color:var(--blush)}
+.footer-links a{color:rgba(253,246,238,.4);font-size:12px;text-decoration:none;margin-left:24px;transition:color .2s}
+.footer-links a:hover{color:var(--blush)}
+
+/* ── MOBILE SWIPE ── */
+.swipe-hint{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);z-index:5;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);padding:7px 16px;border-radius:20px;font-size:11px;color:var(--muted);display:none;pointer-events:none;letter-spacing:.06em}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .product-hero{grid-template-columns:1fr;min-height:unset}
+  .gallery-col{position:relative;top:0;height:70vw;min-height:320px;max-height:520px}
+  .info-col{padding:36px 32px 60px}
+  .desc-grid{grid-template-columns:1fr;gap:36px}
+  .specs-grid{grid-template-columns:1fr}
+  .carousel-card{width:calc(50% - 10px)}
+  .reviews-header{grid-template-columns:1fr;gap:28px}
+  .swipe-hint{display:block}
+}
+@media(max-width:768px){
+  nav,sticky-bar{padding:0 16px}
+  .tabs-nav{padding:0 16px}
+  .tab-panel{padding:40px 20px}
+  .carousel-section{padding:60px 20px}
+  .carousel-card{width:calc(70% - 10px)}
+  .care-grid{grid-template-columns:1fr}
+  .desc-grid{grid-template-columns:1fr}
+  .add-row{flex-direction:column;align-items:stretch}
+  .btn-cart{min-width:unset}
+  .qty-stepper{align-self:flex-start}
+  .sticky-bar{padding:10px 16px}
+  .site-footer{padding:28px 20px;flex-direction:column;text-align:center}
+  .footer-links a:first-child{margin-left:0}
+}
+@media(max-width:480px){
+  .carousel-card{width:calc(85% - 10px)}
+  .info-col{padding:24px 16px 48px}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span>🛍</span><span id="toastMsg">Added to cart!</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="baby-homepage.html" class="nav-logo">Lumi<span>✦</span>Baby</a>
+  <div class="breadcrumb">
+    <a href="#">Home</a><span class="sep">›</span>
+    <a href="#">Nursery</a><span class="sep">›</span>
+    <span style="color:var(--charcoal)">Luna Sound Machine</span>
+  </div>
+  <div class="nav-icons">
+    <div class="n-icon">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+    <div class="n-icon" style="position:relative">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <div class="cart-dot" id="cartDot">3</div>
+    </div>
+  </div>
+</nav>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar" id="stickyBar">
+  <div style="display:flex;align-items:center;gap:20px">
+    <div style="font-size:28px">🌙</div>
+    <div>
+      <div class="sticky-bar-name">Luna Sound Machine</div>
+      <div style="font-size:12px;color:var(--muted)">Nursery · Dreamland</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:24px">
+    <div class="sticky-bar-price">$54.00 <span style="font-size:14px;color:var(--muted);text-decoration:line-through">$68</span></div>
+    <button class="sticky-add" id="stickyAddBtn">Add to Cart</button>
+  </div>
+</div>
+
+<div class="page">
+  <!-- ── PRODUCT HERO ── -->
+  <div class="product-hero">
+
+    <!-- GALLERY -->
+    <div class="gallery-col">
+      <div class="gallery-main" id="galleryMain">
+        <div class="gallery-badges">
+          <div class="g-badge bestseller">★ Bestseller</div>
+          <div class="g-badge award">🏆 Award 2024</div>
+        </div>
+        <div class="gallery-main-inner" id="galleryMainInner" style="background:linear-gradient(135deg,#EDE8F8,#D4C8E8)">
+          <span id="mainEmoji">🌙</span>
+        </div>
+        <div class="zoom-lens" id="zoomLens"></div>
+        <div class="gallery-color-label" id="galleryColorLabel">Lavender Dream</div>
+        <button class="gallery-arrow prev" id="galleryPrev">‹</button>
+        <button class="gallery-arrow next" id="galleryNext">›</button>
+        <div class="swipe-hint">Swipe to explore</div>
+      </div>
+
+      <div class="gallery-thumbs" id="galleryThumbs">
+        <!-- Dynamically rendered to match active color -->
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="info-col" id="infoCol">
+      <div class="info-eyebrow">Nursery · Sleep Essentials</div>
+      <h1 class="product-title">Luna Sound<br><em>Machine</em></h1>
+
+      <div class="rating-row">
+        <div class="stars-display" id="mainStars"></div>
+        <span class="rating-num">4.9</span>
+        <div class="rating-divider"></div>
+        <a class="review-link" id="reviewLink">3,102 reviews</a>
+        <div class="rating-divider"></div>
+        <span class="verified-badge">✓ Pediatrician Approved</span>
+      </div>
+
+      <div class="price-block">
+        <span class="price-main" id="currentPrice">$54.00</span>
+        <span class="price-old">$68.00</span>
+        <span class="price-save">Save 21%</span>
+      </div>
+
+      <p class="short-desc">Thirty hand-curated soothing sounds — white noise, nature, lullabies — wrapped in a whisper-soft nightlight with auto-off timer. Engineered for the deepest, safest infant sleep.</p>
+
+      <div class="availability">
+        <div class="avail-dot" id="availDot"></div>
+        <span class="avail-text" id="availText">In Stock</span>
+        <span class="avail-sub" id="availSub">— Ships within 24 hours</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Color -->
+      <div class="option-label">Color <span id="selectedColor">Lavender Dream</span></div>
+      <div class="color-swatches" id="colorSwatches">
+        <div class="swatch active" style="background:linear-gradient(135deg,#D8D0E8,#9B91C0)" data-name="Lavender Dream"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#F2C4B2,#C97B5A)" data-name="Sunset Blush"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#C5DFC0,#5C7A57)" data-name="Sage Forest"></div>
+        <div class="swatch white" style="background:#F8F5F0;border:1.5px solid rgba(44,44,44,.12)" data-name="Warm White"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#3E3832,#2C2C2C)" data-name="Midnight Noir"></div>
+      </div>
+
+      <!-- Sound Pack -->
+      <div class="option-label">Sound Pack <span id="selectedPack">Standard (30 sounds)</span></div>
+      <div class="size-grid" id="packGrid">
+        <button class="size-btn active" data-pack="Standard (30 sounds)">Standard</button>
+        <button class="size-btn" data-pack="Premium (60 sounds)">Premium +30 <span style="font-size:11px;opacity:.7">+$12</span></button>
+        <button class="size-btn" data-pack="Ultimate Bundle">Ultimate Bundle</button>
+      </div>
+
+      <div class="add-row">
+        <div class="qty-stepper">
+          <button class="qty-btn" id="qtyMinus">−</button>
+          <div class="qty-num" id="qtyNum">1</div>
+          <button class="qty-btn" id="qtyPlus">+</button>
+        </div>
+        <button class="btn-cart" id="cartBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Add to Cart
+        </button>
+        <button class="btn-wishlist" id="wishBtn" title="Save to wishlist">♡</button>
+      </div>
+
+      <div class="trust-row">
+        <div class="trust-item"><span class="t-icon">🚚</span> Free shipping over $50</div>
+        <div class="trust-item"><span class="t-icon">↩️</span> 30-day returns</div>
+        <div class="trust-item"><span class="t-icon">🛡️</span> 2-year warranty</div>
+        <div class="trust-item"><span class="t-icon">🔒</span> Secure checkout</div>
+      </div>
+
+      <div class="feature-pills">
+        <div class="feat-pill"><span class="fp-icon">🌱</span> BPA-Free</div>
+        <div class="feat-pill"><span class="fp-icon">🔇</span> 85dB Max Safe</div>
+        <div class="feat-pill"><span class="fp-icon">⏱</span> Auto-off Timer</div>
+        <div class="feat-pill"><span class="fp-icon">🌈</span> Nightlight</div>
+        <div class="feat-pill"><span class="fp-icon">📶</span> No WiFi Needed</div>
+      </div>
+
+      <div class="share-row">
+        <span>Share:</span>
+        <button class="share-btn" id="shareLinkBtn" title="Copy link">🔗</button>
+        <button class="share-btn" title="Pinterest">📌</button>
+        <button class="share-btn" title="Facebook">📘</button>
+      </div>
+    </div>
+  </div><!-- /product-hero -->
+
+  <!-- ── TABS ── -->
+  <div class="tabs-section">
+    <div class="tabs-nav" id="tabsNav">
+      <button class="tab-btn active" data-tab="description">Description</button>
+      <button class="tab-btn" data-tab="specs">Specifications</button>
+      <button class="tab-btn" data-tab="care">Care Instructions</button>
+      <button class="tab-btn" data-tab="reviews">Reviews (3,102)</button>
+    </div>
+
+    <!-- Description -->
+    <div class="tab-panel active" id="tab-description">
+      <div class="desc-grid">
+        <div class="desc-main">
+          <h2>Sleep science meets <em>gentle design</em></h2>
+          <p>The Luna Sound Machine was born from one simple truth: the womb is loud. At roughly 85 decibels — equivalent to a running vacuum cleaner — the sounds of your heartbeat, blood flow, and digestion surrounded your baby before birth. Silence, to a newborn, is actually jarring.</p>
+          <p>We worked with three pediatric sleep consultants and an acoustics engineer to curate 30 frequency-matched soundscapes that recreate that comforting in-utero environment. Each track is mastered to a safe maximum of 85dB and loops seamlessly — no jarring restarts that could wake a sleeping baby.</p>
+          <p>The built-in warm-amber nightlight emits only long-wavelength light (580nm+), which research shows does not suppress melatonin production in infants — unlike blue-spectrum LEDs found in most baby products. The result: faster sleep onset, fewer night wakings, longer stretches.</p>
+          <p style="font-family:var(--font-display);font-size:20px;font-style:italic;color:var(--charcoal);border-left:3px solid var(--clay);padding-left:20px;margin:28px 0">"Our daughter went from waking every two hours to sleeping eight-hour stretches within three nights." — James K., Verified Buyer</p>
+        </div>
+        <div>
+          <div class="desc-highlights">
+            <h4>What makes Luna different</h4>
+            <div class="highlight-item">
+              <div class="h-icon">🎵</div>
+              <div class="h-text"><h5>30 Curated Soundscapes</h5><p>White noise, pink noise, brown noise, rain, ocean, heartbeat, lullabies — all acoustically engineered for infant sleep.</p></div>
+            </div>
+            <div class="highlight-item">
+              <div class="h-icon">🌙</div>
+              <div class="h-text"><h5>Melatonin-Safe Nightlight</h5><p>Warm amber LEDs only. No blue light wavelengths that disrupt circadian rhythm development.</p></div>
+            </div>
+            <div class="highlight-item">
+              <div class="h-icon">⏱</div>
+              <div class="h-text"><h5>Smart Timer</h5><p>30, 60, 90 minute auto-off — or continuous play. Soft fade-out prevents sudden silence from waking baby.</p></div>
+            </div>
+            <div class="highlight-item">
+              <div class="h-icon">🔋</div>
+              <div class="h-text"><h5>Cord or Battery</h5><p>USB-C power or 3×AA batteries for travel. Maintains settings between sessions.</p></div>
+            </div>
+            <div class="highlight-item">
+              <div class="h-icon">🧼</div>
+              <div class="h-text"><h5>Wipe-Clean Surface</h5><p>Food-grade BPA-free ABS. Antimicrobial coating. Easy to disinfect.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specs -->
+    <div class="tab-panel" id="tab-specs">
+      <div class="specs-grid">
+        <div>
+          <div class="spec-table">
+            <div class="spec-table-head">Technical Specifications</div>
+            <div class="spec-row"><span class="spec-key">Dimensions</span><span class="spec-val">4.5" × 4.5" × 4.8"</span></div>
+            <div class="spec-row"><span class="spec-key">Weight</span><span class="spec-val">310g (10.9 oz)</span></div>
+            <div class="spec-row"><span class="spec-key">Sound Tracks</span><span class="spec-val">30 loops (60 w/ Premium)</span></div>
+            <div class="spec-row"><span class="spec-key">Volume Range</span><span class="spec-val">35dB – 85dB (12 levels)</span></div>
+            <div class="spec-row"><span class="spec-key">Nightlight Colors</span><span class="spec-val">Warm amber (580nm)</span></div>
+            <div class="spec-row"><span class="spec-key">Timer Options</span><span class="spec-val">30 / 60 / 90 min / Continuous</span></div>
+            <div class="spec-row"><span class="spec-key">Power</span><span class="spec-val">USB-C (5V 1A) / 3×AA</span></div>
+            <div class="spec-row"><span class="spec-key">Battery Life</span><span class="spec-val">Up to 18 hours (mid volume)</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="spec-table">
+            <div class="spec-table-head">Safety & Materials</div>
+            <div class="spec-row"><span class="spec-key">Material</span><span class="spec-val">BPA-Free ABS Plastic</span></div>
+            <div class="spec-row"><span class="spec-key">Surface Coating</span><span class="spec-val">Antimicrobial (silver-ion)</span></div>
+            <div class="spec-row"><span class="spec-key">Age Rating</span><span class="spec-val">Newborn and up</span></div>
+            <div class="spec-row"><span class="spec-key">CPSC Compliant</span><span class="spec-val">Yes</span></div>
+            <div class="spec-row"><span class="spec-key">ASTM Certified</span><span class="spec-val">F963-23</span></div>
+            <div class="spec-row"><span class="spec-key">RoHS Compliant</span><span class="spec-val">Yes</span></div>
+            <div class="spec-row"><span class="spec-key">Warranty</span><span class="spec-val">2 Years Limited</span></div>
+            <div class="spec-row"><span class="spec-key">Country of Origin</span><span class="spec-val">Designed in USA</span></div>
+          </div>
+          <div class="cert-grid">
+            <div class="cert-badge"><span class="cb-icon">🏅</span> CPSC Certified</div>
+            <div class="cert-badge"><span class="cb-icon">🌱</span> BPA-Free</div>
+            <div class="cert-badge"><span class="cb-icon">♻️</span> RoHS Compliant</div>
+            <div class="cert-badge"><span class="cb-icon">🛡️</span> ASTM F963</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Care -->
+    <div class="tab-panel" id="tab-care">
+      <div class="care-grid">
+        <div class="care-card">
+          <div class="care-icon">🧽</div>
+          <h4>Cleaning</h4>
+          <p>Wipe exterior with a damp cloth and mild soap. Never submerge in water or use abrasive cleaners. Dry thoroughly before use. Speaker grille can be gently cleaned with a soft dry brush.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">🔋</div>
+          <h4>Battery Care</h4>
+          <p>Remove batteries if storing for more than 30 days. Use only alkaline AA batteries — avoid mixing old and new. When using USB-C, the unit does not drain batteries. Store at room temperature.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">📦</div>
+          <h4>Storage</h4>
+          <p>Store in the original packaging or a padded bag when traveling. Keep away from direct sunlight and extreme temperatures. Unit is not waterproof — keep away from moisture.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">🌡</div>
+          <h4>Operating Conditions</h4>
+          <p>Designed for indoor use between 50°F–95°F (10°C–35°C). Humidity range: 20–80% non-condensing. Do not use in bathrooms or near water sources. Ensure at least 3ft from the crib.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">🔧</div>
+          <h4>Troubleshooting</h4>
+          <p>If the unit doesn't respond, reset by holding the power button for 8 seconds. For speaker distortion, reduce volume and ensure speaker grille is clear. All repairs must be done by Lumi service centers.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">📞</div>
+          <h4>Support</h4>
+          <p>2-year limited warranty covers all manufacturing defects. Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caa2afa6a6a58aa6bfa7a3a8aba8b3e4a9a5a7">[email&#160;protected]</a> or visit our help center. For warranty claims, keep your original receipt. We respond within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="tab-panel" id="tab-reviews">
+      <div class="reviews-header">
+        <div class="reviews-summary">
+          <div class="big-rating">4.9</div>
+          <div class="big-stars">★★★★★</div>
+          <div class="big-rating-sub">Based on 3,102 reviews</div>
+          <div class="rating-bars" id="ratingBars"></div>
+        </div>
+        <div>
+          <div class="reviews-filters">
+            <button class="rev-filter active" data-filter="all">All Reviews</button>
+            <button class="rev-filter" data-filter="5">★★★★★ 5 stars</button>
+            <button class="rev-filter" data-filter="4">★★★★☆ 4 stars</button>
+            <button class="rev-filter" data-filter="photos">With Photos</button>
+            <button class="rev-filter" data-filter="verified">Verified Only</button>
+          </div>
+          <div class="reviews-list" id="reviewsList"></div>
+          <button class="write-review-btn">✦ Write a Review</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CAROUSEL ── -->
+  <div class="carousel-section">
+    <div class="carousel-header">
+      <div>
+        <div style="font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--clay);margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:10px"><span style="display:block;width:24px;height:1px;background:var(--clay)"></span>You May Also Like</div>
+        <h2>Complete your <em>nursery</em></h2>
+      </div>
+      <div class="carousel-controls">
+        <button class="carr-btn" id="carrPrev">‹</button>
+        <button class="carr-btn" id="carrNext">›</button>
+      </div>
+    </div>
+    <div class="carousel-track-wrap">
+      <div class="carousel-track" id="carouselTrack"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-logo-sm">Lumi<span>✦</span>Baby</div>
+    <p style="font-size:12px">© 2025 Lumi Baby. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Help</a>
+    </div>
+  </footer>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+/* ── CURSOR ── */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx+'px'; cur.style.top = my+'px';
+}, {passive:true});
+(function animRing() {
+  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.addEventListener('mouseover', e => {
+  if (e.target.closest('button,a,.swatch,.gallery-thumb,.carousel-card,.review-card,.size-btn,.carr-add')) {
+    cur.classList.add('expand'); ring.style.opacity='0';
+  }
+}, {passive:true});
+document.addEventListener('mouseout', () => {
+  cur.classList.remove('expand'); ring.style.opacity='.4';
+}, {passive:true});
+
+/* ── GALLERY DATA ── */
+const COLOR_PALETTES = {
+  'Lavender Dream': {
+    emoji: '🌙',
+    bgs: [
+      'linear-gradient(135deg,#EDE8F8,#D4C8E8)',
+      'linear-gradient(155deg,#E4DDF4,#C8BEE0)',
+      'linear-gradient(115deg,#F2EEF8,#D0C6E6)',
+      'linear-gradient(145deg,#DDD5EB,#BAB0D4)',
+      'linear-gradient(130deg,#E8E2F4,#CAC0DC)',
+    ],
+  },
+  'Sunset Blush': {
+    emoji: '🌸',
+    bgs: [
+      'linear-gradient(135deg,#FDE8E0,#F2C4B2)',
+      'linear-gradient(155deg,#FAE0D6,#EDBAAA)',
+      'linear-gradient(115deg,#FDEEE8,#F5CCBC)',
+      'linear-gradient(145deg,#F5D8CC,#E8AA96)',
+      'linear-gradient(130deg,#FAE6DE,#F0C0A8)',
+    ],
+  },
+  'Sage Forest': {
+    emoji: '🌿',
+    bgs: [
+      'linear-gradient(135deg,#E0EDD8,#C5DFC0)',
+      'linear-gradient(155deg,#D6E8CC,#BBDAB4)',
+      'linear-gradient(115deg,#E8F2E2,#CCE4C8)',
+      'linear-gradient(145deg,#CCDEC4,#AACED0)',
+      'linear-gradient(130deg,#DDEBD4,#C0DCBC)',
+    ],
+  },
+  'Warm White': {
+    emoji: '☁️',
+    bgs: [
+      'linear-gradient(135deg,#F8F5F0,#EEE8E0)',
+      'linear-gradient(155deg,#F5F2EC,#EAE4D8)',
+      'linear-gradient(115deg,#FAF8F4,#F0EBE2)',
+      'linear-gradient(145deg,#F0EDE6,#E4DDD2)',
+      'linear-gradient(130deg,#F6F3EE,#ECE6DC)',
+    ],
+  },
+  'Midnight Noir': {
+    emoji: '🌑',
+    bgs: [
+      'linear-gradient(135deg,#4A4540,#2C2C2C)',
+      'linear-gradient(155deg,#423E3A,#262626)',
+      'linear-gradient(115deg,#504B46,#323232)',
+      'linear-gradient(145deg,#3A3630,#222222)',
+      'linear-gradient(130deg,#46423C,#2A2A2A)',
+    ],
+  },
+};
+
+const SLIDE_VIEWS = [
+  { label: 'Luna Sound Machine · Front View',   tag: 'Front'       },
+  { label: 'Speaker Grille · Side Profile',      tag: '30 Sounds'   },
+  { label: 'Amber Nightlight · Glow Mode',       tag: 'Night Glow'  },
+  { label: 'USB-C Port · Back Panel',            tag: 'USB-C'       },
+  { label: 'Gift-Ready Packaging · Unboxing',    tag: 'Gift Box'    },
+];
+
+let activeColorName = 'Lavender Dream';
+let currentSlide = 0;
+let isZoomed = false;
+
+function buildSlides() {
+  const p = COLOR_PALETTES[activeColorName];
+  return SLIDE_VIEWS.map((v, i) => ({ emoji: p.emoji, bg: p.bgs[i], label: v.label, tag: v.tag }));
+}
+let slides = buildSlides();
+
+function renderThumbs() {
+  const wrap = document.getElementById('galleryThumbs');
+  if (!wrap) return;
+  wrap.innerHTML = slides.map((s, i) => `
+    <div class="gallery-thumb ${i===currentSlide?'active':''}" data-idx="${i}" title="${s.label}">
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+        flex-direction:column;gap:4px;background:${s.bg};transition:background .4s">
+        <span style="font-size:22px">${s.emoji}</span>
+        <span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+          color:rgba(44,44,44,.55);font-family:var(--font-body);text-align:center;
+          padding:0 4px;line-height:1.2">${s.tag}</span>
+      </div>
+    </div>`).join('');
+  wrap.querySelectorAll('.gallery-thumb').forEach(t => {
+    t.addEventListener('click', () => setSlide(parseInt(t.dataset.idx)));
+  });
+}
+
+function setSlide(i, animate=true) {
+  currentSlide = i;
+  const inner = document.getElementById('galleryMainInner');
+  const label = document.getElementById('galleryColorLabel');
+  if (!inner) return;
+  if (animate) { inner.style.opacity='0'; inner.style.transform='scale(.96)'; }
+  setTimeout(() => {
+    inner.style.background = slides[i].bg;
+    inner.innerHTML = `<span style="font-size:clamp(120px,15vw,180px)">${slides[i].emoji}</span>`;
+    if (label) label.textContent = slides[i].label;
+    if (animate) {
+      inner.style.transition = 'opacity .35s, transform .4s var(--ease), background .4s';
+      inner.style.opacity = '1'; inner.style.transform = 'scale(1)';
+    }
+  }, animate ? 100 : 0);
+  isZoomed = false;
+  if (inner) inner.style.transform = '';
+  const gm = document.getElementById('galleryMain');
+  if (gm) gm.classList.remove('zoomed');
+  renderThumbs();
+}
+
+function prevSlide() { setSlide((currentSlide - 1 + slides.length) % slides.length); }
+function nextSlide() { setSlide((currentSlide + 1) % slides.length); }
+
+function toggleZoom() {
+  isZoomed = !isZoomed;
+  const main = document.getElementById('galleryMain');
+  const inner = document.getElementById('galleryMainInner');
+  if (!main || !inner) return;
+  if (isZoomed) { main.classList.add('zoomed'); inner.style.transform='scale(2.2)'; }
+  else { main.classList.remove('zoomed'); inner.style.transform='scale(1)'; }
+}
+
+function moveLens(e) {
+  if (isZoomed) return;
+  const lens = document.getElementById('zoomLens');
+  if (!lens) return;
+  const rect = document.getElementById('galleryMain').getBoundingClientRect();
+  lens.style.left = (e.clientX - rect.left) + 'px';
+  lens.style.top  = (e.clientY - rect.top)  + 'px';
+}
+function hideLens() {
+  const lens = document.getElementById('zoomLens');
+  if (lens) lens.style.opacity = '0';
+}
+
+/* Attach gallery events */
+const galMain = document.getElementById('galleryMain');
+if (galMain) {
+  galMain.addEventListener('click',      toggleZoom);
+  galMain.addEventListener('mousemove',  moveLens,  {passive:true});
+  galMain.addEventListener('mouseleave', hideLens,  {passive:true});
+  let touchStartX = 0;
+  galMain.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+  galMain.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? nextSlide() : prevSlide(); }
+  }, {passive:true});
+}
+const gPrev = document.getElementById('galleryPrev');
+const gNext = document.getElementById('galleryNext');
+if (gPrev) gPrev.addEventListener('click', e => { e.stopPropagation(); prevSlide(); });
+if (gNext) gNext.addEventListener('click', e => { e.stopPropagation(); nextSlide(); });
+
+/* ── COLOR SELECT ── */
+function selectColor(el) {
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  activeColorName = el.dataset.name;
+  const selColor = document.getElementById('selectedColor');
+  if (selColor) selColor.textContent = activeColorName;
+  slides = buildSlides();
+  const inner = document.getElementById('galleryMainInner');
+  if (inner) {
+    inner.style.transition = 'background .45s, opacity .3s';
+    inner.style.opacity = '0';
+    setTimeout(() => {
+      inner.style.background = slides[currentSlide].bg;
+      const span = inner.querySelector('span');
+      if (span) span.textContent = slides[currentSlide].emoji;
+      const label = document.getElementById('galleryColorLabel');
+      if (label) label.textContent = slides[currentSlide].label;
+      inner.style.opacity = '1';
+    }, 160);
+  }
+  renderThumbs();
+}
+document.querySelectorAll('.swatch').forEach(s => {
+  s.addEventListener('click', () => selectColor(s));
+});
+
+/* ── SIZE / PACK SELECT ── */
+function selectSize(el, name) {
+  document.querySelectorAll('#packGrid .size-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const sp = document.getElementById('selectedPack');
+  if (sp) sp.textContent = name;
+  const prices = { 'Standard (30 sounds)':54, 'Premium (60 sounds)':66, 'Ultimate Bundle':84 };
+  const p = prices[name] || 54;
+  const cp = document.getElementById('currentPrice');
+  if (cp) cp.textContent = '$'+p+'.00';
+  const sbp = document.querySelector('.sticky-bar-price');
+  if (sbp) sbp.innerHTML = `$${p}.00 <span style="font-size:14px;color:var(--muted);text-decoration:line-through">$68</span>`;
+}
+document.querySelectorAll('#packGrid .size-btn').forEach(btn => {
+  btn.addEventListener('click', () => selectSize(btn, btn.dataset.pack));
+});
+
+/* ── QTY STEPPER ── */
+let qty = 1;
+function changeQty(d) {
+  qty = Math.max(1, Math.min(10, qty + d));
+  const el = document.getElementById('qtyNum');
+  if (el) el.textContent = qty;
+}
+const qm = document.getElementById('qtyMinus');
+const qp = document.getElementById('qtyPlus');
+if (qm) qm.addEventListener('click', () => changeQty(-1));
+if (qp) qp.addEventListener('click', () => changeQty(1));
+
+/* ── CART ── */
+let cartCount = 3;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  const tm = document.getElementById('toastMsg');
+  if (!t || !tm) return;
+  tm.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+function addToCart() {
+  cartCount += qty;
+  const dot = document.getElementById('cartDot');
+  if (dot) dot.textContent = cartCount;
+  const btn = document.getElementById('cartBtn');
+  if (btn) {
+    btn.classList.add('success');
+    btn.innerHTML = '<span>✓</span> Added to Cart!';
+    showToast(`${qty} item${qty>1?'s':''} added to cart`);
+    setTimeout(() => {
+      btn.classList.remove('success');
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Add to Cart';
+    }, 2800);
+  }
+}
+const cartBtn = document.getElementById('cartBtn');
+if (cartBtn) cartBtn.addEventListener('click', addToCart);
+const stickyAdd = document.getElementById('stickyAddBtn');
+if (stickyAdd) stickyAdd.addEventListener('click', addToCart);
+
+/* ── WISHLIST ── */
+let wished = false;
+function toggleWish() {
+  wished = !wished;
+  const b = document.getElementById('wishBtn');
+  if (b) { b.textContent = wished ? '♥' : '♡'; b.classList.toggle('active', wished); }
+  if (wished) showToast('Saved to your wishlist ♥');
+}
+const wishBtn = document.getElementById('wishBtn');
+if (wishBtn) wishBtn.addEventListener('click', toggleWish);
+
+/* ── SHARE ── */
+const shareLinkBtn = document.getElementById('shareLinkBtn');
+if (shareLinkBtn) shareLinkBtn.addEventListener('click', () => {
+  navigator.clipboard?.writeText(window.location.href);
+  showToast('Link copied to clipboard!');
+});
+
+/* ── STICKY BAR ── */
+const sb = document.getElementById('stickyBar');
+const priceBlock = document.querySelector('.price-block');
+if (sb && priceBlock) {
+  const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
+  const stickyObs = new IntersectionObserver(entries => {
+    sb.classList.toggle('visible', !entries[0].isIntersecting);
+  }, { threshold:0, rootMargin: `-${navH}px 0px 0px 0px` });
+  stickyObs.observe(priceBlock);
+}
+
+/* ── TABS ── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-'+id);
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.dataset.tab === id) b.classList.add('active');
+  });
+  const tabsSection = document.querySelector('.tabs-section');
+  if (tabsSection) {
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
+    const top = tabsSection.getBoundingClientRect().top + window.scrollY - navH - 2;
+    window.scrollTo({ top, behavior:'smooth' });
+  }
+  if (id === 'reviews') setTimeout(animateBars, 300);
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+// Review link in rating row
+const reviewLink = document.getElementById('reviewLink');
+if (reviewLink) reviewLink.addEventListener('click', () => switchTab('reviews'));
+
+/* ── STARS ── */
+function renderStars(r, container) {
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i=1; i<=5; i++) {
+    const s = document.createElement('span');
+    s.className = 'star-icon' + (i > r ? ' empty' : '');
+    s.textContent = '★';
+    container.appendChild(s);
+  }
+}
+renderStars(5, document.getElementById('mainStars'));
+
+/* ── RATING BARS ── */
+const barData = [
+  {stars:5, pct:87}, {stars:4, pct:9}, {stars:3, pct:2}, {stars:2, pct:1}, {stars:1, pct:1}
+];
+function buildBars() {
+  const wrap = document.getElementById('ratingBars');
+  if (!wrap) return;
+  wrap.innerHTML = barData.map(b => `
+    <div class="rating-bar-row">
+      <span style="color:var(--gold)">★</span><span>${b.stars}</span>
+      <div class="rating-bar-track"><div class="rating-bar-fill" data-w="${b.pct}" style="width:0"></div></div>
+      <span>${b.pct}%</span>
+    </div>`).join('');
+}
+function animateBars() {
+  document.querySelectorAll('.rating-bar-fill').forEach(el => { el.style.width = el.dataset.w + '%'; });
+}
+buildBars();
+
+/* ── REVIEWS ── */
+const reviewsData = [
+  {name:'Sarah M.',meta:'Mother of 2 · New York',avatar:'👩',bg:'linear-gradient(135deg,#F2C4B2,#C97B5A)',stars:5,date:'March 1, 2025',title:'Life-changing for our whole family',body:'I was sceptical — we had tried three other sound machines. Nothing worked. Luna had our daughter sleeping 8 hours straight by night four. The amber light is genuinely different from other products, and the seamless looping means no jarring cuts that wake her up. Worth every penny and then some.',verified:true,helpful:312,photos:true},
+  {name:'James & Elena K.',meta:'First-time parents · Seattle',avatar:'👨',bg:'linear-gradient(135deg,#D4E8F0,#8FAF8A)',stars:5,date:'Feb 18, 2025',title:'Our paediatrician recommended it',body:"Our son's sleep consultant specifically recommended Luna after we described his sleep issues. The brown noise setting combined with the amber glow at lowest brightness has worked perfectly. Also love that it runs on batteries for travel.",verified:true,helpful:187,photos:false},
+  {name:'Priya R.',meta:'Mom of 3 · Chicago',avatar:'👩',bg:'linear-gradient(135deg,#D8D0E8,#9B91C0)',stars:5,date:'Feb 10, 2025',title:'Buying one for every baby shower gift',body:"On my third child, I wish I had discovered Lumi sooner. I've now gifted this to four friends and every single one has thanked me. The build quality is noticeably better than competitors — feels solid and premium.",verified:true,helpful:243,photos:false},
+  {name:'Marcus T.',meta:'Dad · Austin, TX',avatar:'🧑',bg:'linear-gradient(135deg,#FDE8E0,#F2C4B2)',stars:4,date:'Jan 29, 2025',title:'Excellent product, minor UI learning curve',body:'The sound quality and light are genuinely excellent. It took me about 10 minutes to figure out all the button combinations. Once you learn it, it\'s very intuitive. Would absolutely buy again.',verified:true,helpful:98,photos:false},
+  {name:'Diane L.',meta:'Grandmother · Portland',avatar:'👩',bg:'linear-gradient(135deg,#E0EDD8,#C5DFC0)',stars:5,date:'Jan 15, 2025',title:'Bought for my granddaughter, everyone loves it',body:"My daughter didn't ask for this, I just bought it as a bonus gift. Now it's the first thing she packs when they travel. The packaging alone felt like a luxury product.",verified:false,helpful:156,photos:true},
+];
+
+function buildReviews(filter='all') {
+  const list = document.getElementById('reviewsList');
+  if (!list) return;
+  const filtered = reviewsData.filter(r => {
+    if (filter==='5') return r.stars===5;
+    if (filter==='4') return r.stars===4;
+    if (filter==='photos') return r.photos;
+    if (filter==='verified') return r.verified;
+    return true;
+  });
+  list.innerHTML = filtered.map((r, i) => `
+    <div class="review-card" style="animation-delay:${i*60}ms">
+      <div class="review-top">
+        <div class="reviewer-info">
+          <div class="reviewer-avatar" style="background:${r.bg}">${r.avatar}</div>
+          <div>
+            <div class="reviewer-name">${r.name}</div>
+            <div class="reviewer-meta">${r.meta}</div>
+          </div>
+        </div>
+        <div class="review-stars-date">
+          <div style="color:var(--gold);font-size:13px">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+          <div class="review-date">${r.date}</div>
+        </div>
+      </div>
+      <div class="review-title">${r.title}</div>
+      <div class="review-body">${r.body}</div>
+      <div class="review-footer">
+        <span class="review-helpful">Helpful?</span>
+        <button class="helpful-btn" data-idx="${i}">👍 ${r.helpful}</button>
+        ${r.verified ? '<span class="verified-purchase">✓ Verified Purchase</span>' : ''}
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.helpful-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      reviewsData[idx].helpful++;
+      btn.textContent = `👍 ${reviewsData[idx].helpful}`;
+      btn.style.borderColor = 'var(--clay)'; btn.style.color = 'var(--clay)';
+    });
+  });
+}
+
+document.querySelectorAll('.rev-filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.rev-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    buildReviews(btn.dataset.filter);
+  });
+});
+buildReviews();
+
+/* ── CAROUSEL ── */
+const carouselProducts = [
+  {emoji:'⭐', bg:'linear-gradient(135deg,#FFF3D4,#FFE4A0)', cat:'Nursery', name:'Star Projector Pro',      rating:'4.8', price:'$72'},
+  {emoji:'🛏', bg:'linear-gradient(135deg,#D4E8F0,#A8CDD8)', cat:'Nursery', name:'Organic Crib Sheets',     rating:'4.8', price:'$62'},
+  {emoji:'📡', bg:'linear-gradient(135deg,#EDE8F8,#D4C8E8)', cat:'Nursery', name:'Smart Baby Monitor',      rating:'4.8', price:'$198'},
+  {emoji:'🌿', bg:'linear-gradient(135deg,#E0EDD8,#C5DFC0)', cat:'Nursery', name:'Air Purifier Mini',       rating:'4.7', price:'$88'},
+  {emoji:'💡', bg:'linear-gradient(135deg,#FDE8E0,#F2C4B2)', cat:'Nursery', name:'Sunrise Wake Light',      rating:'4.9', price:'$58'},
+  {emoji:'🧸', bg:'linear-gradient(135deg,#FFF3D4,#FFE4A0)', cat:'Toys',    name:'Soothe & Snuggle Bear',   rating:'4.9', price:'$48'},
+];
+let carPos = 0;
+function buildCarousel() {
+  const track = document.getElementById('carouselTrack');
+  if (!track) return;
+  track.innerHTML = carouselProducts.map((p, i) => `
+    <div class="carousel-card" style="animation-delay:${i*60}ms">
+      <div class="carr-img" style="background:${p.bg}">
+        <div class="carr-img-inner">${p.emoji}</div>
+      </div>
+      <div class="carr-body">
+        <div class="carr-cat">${p.cat}</div>
+        <div class="carr-name">${p.name}</div>
+        <div class="carr-rating">${'★'.repeat(Math.floor(parseFloat(p.rating)))} ${p.rating}</div>
+        <div class="carr-footer">
+          <span class="carr-price">${p.price}</span>
+          <button class="carr-add" data-name="${p.name}">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+  track.querySelectorAll('.carr-add').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); showToast('Added to cart!'); });
+  });
+}
+function getCardsVisible() {
+  const w = window.innerWidth;
+  if (w<=480) return 1.2; if (w<=768) return 1.8; if (w<=1100) return 2; return 4;
+}
+function moveCarousel(dir) {
+  const track = document.getElementById('carouselTrack');
+  if (!track) return;
+  const first = track.querySelector('.carousel-card');
+  if (!first) return;
+  const cardW = first.offsetWidth + 20;
+  const maxPos = Math.max(0, carouselProducts.length - Math.floor(getCardsVisible()));
+  carPos = Math.max(0, Math.min(maxPos, carPos + dir));
+  track.style.transform = `translateX(-${carPos * cardW}px)`;
+}
+buildCarousel();
+const cpBtn = document.getElementById('carrPrev');
+const cnBtn = document.getElementById('carrNext');
+if (cpBtn) cpBtn.addEventListener('click', () => moveCarousel(-1));
+if (cnBtn) cnBtn.addEventListener('click', () => moveCarousel(1));
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowLeft')  prevSlide();
+  if (e.key==='ArrowRight') nextSlide();
+});
+
+/* ── INIT ── */
+setSlide(0, false);
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
