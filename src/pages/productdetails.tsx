@@ -334,58 +334,9 @@ export default function ProductDetails() {
         <span>{toastMsg}</span>
       </div>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-[800] h-[68px] px-12 flex items-center justify-between bg-[#FDF6EE]/95 backdrop-blur-[18px] border-b border-[rgba(201,123,90,0.13)]">
-        <Link to="/" className="font-['Cormorant_Garamond'] text-[26px] font-light text-[#2C2C2C] no-underline tracking-[0.06em]">
-          Lumi<span className="text-[#C97B5A]">✦</span>Baby
-        </Link>
-        <div className="flex items-center gap-1.75 text-[12px] text-[#7A7068]">
-          <Link to="/" className="text-[#7A7068] no-underline hover:text-[#C97B5A] transition-colors">Home</Link>
-          <span className="opacity-40 text-[10px]">›</span>
-          <Link to="/products" className="text-[#7A7068] no-underline hover:text-[#C97B5A] transition-colors">Nursery</Link>
-          <span className="opacity-40 text-[10px]">›</span>
-          <span className="text-[#2C2C2C]">Luna Sound Machine</span>
-        </div>
-        <div className="flex items-center gap-3.5">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer text-[#2C2C2C] transition-colors hover:bg-[#EDD5C8]">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-          </div>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer text-[#2C2C2C] transition-colors hover:bg-[#EDD5C8] relative">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            <div className="absolute -top-0.5 -right-0.5 w-[15px] h-[15px] bg-[#C97B5A] rounded-full text-white text-[9px] flex items-center justify-center font-semibold">
-              {cartCount}
-            </div>
-          </div>
-        </div>
-      </nav>
 
-      {/* Sticky Bar */}
-      <div
-        className={`fixed top-[68px] left-0 right-0 z-[700] bg-[#FDF6EE]/96 backdrop-blur-[16px] border-b border-[rgba(201,123,90,0.13)] px-12 py-3 flex items-center justify-between transition-transform duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${isStickyVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'}`}
-      >
-        <div className="flex items-center gap-5">
-          <div className="text-[28px]">🌙</div>
-          <div>
-            <div className="font-['Cormorant_Garamond'] text-[20px] font-normal">Luna Sound Machine</div>
-            <div className="text-[12px] text-[#7A7068]">Nursery · Dreamland</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="text-[18px] font-medium text-[#2C2C2C]">
-            ${currentPrice}.00 <span className="text-[14px] text-[#7A7068] line-through">$68</span>
-          </div>
-          <button
-            className="px-7 py-2.25 rounded-[50px] bg-[#C97B5A] text-white border-none font-['DM_Sans'] text-[12px] tracking-[0.1em] uppercase cursor-pointer transition-all duration-250 hover:bg-[#A35E41] hover:scale-[1.03]"
-            onClick={addToCart}
-          >
-            Add to Cart
-          </button>
-        </div>
-      </div>
+
+
 
       <div className="pt-[68px]">
         {/* Product Hero */}
